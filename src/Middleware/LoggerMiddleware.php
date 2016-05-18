@@ -5,7 +5,7 @@ namespace Phlux\Middleware;
 use Phlux\Contracts\StateInterface;
 use Phlux\Contracts\EventInterface;
 use Phlux\Contracts\MiddlewareInterface;
-use Phlux\Contracts\LoggerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Logs any events that are passed through the pipeline
@@ -41,15 +41,16 @@ class LoggerMiddleware implements MiddlewareInterface
      */
     public function __invoke(StateInterface $state, EventInterface $event, callable $next = null)
     {
-        $this->logger->log('-----------Previous State-----------');
-        $this->logger->log($state);
+        $this->logger->info('-----------Previous State-----------');
+        $this->logger->info($state);
 
-        $this->logger->log('----------Dispatched Event----------');
-        $this->logger->log($event);
+        $this->logger->info('----------Dispatched Event----------');
+        $this->logger->info($event);
+
         $result = $next($state, $event);
 
-        $this->logger->log('-------------Next State-------------');
-        $this->logger->log($result);
+        $this->logger->info('-------------Next State-------------');
+        $this->logger->info($result);
 
         return $result;
     }

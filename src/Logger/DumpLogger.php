@@ -2,26 +2,25 @@
 
 namespace Phlux\Logger;
 
-use Phlux\Contracts\LoggerInterface;
+use Psr\Log\AbstractLogger;
 
 /**
  * Simple var dump logger, useful for testing
  *
  */
-class DumpLogger implements LoggerInterface
+class DumpLogger extends AbstractLogger
 {
     /**
-     * Log a message
+     * Logs with an arbitrary level.
      *
-     * @param string|array $messages
-     * @return void
+     * @param mixed  $level
+     * @param string $message
+     * @param array  $context
+     *
+     * @return null
      */
-    public function log($messages)
+    public function log($level, $message, array $context = array())
     {
-        if (is_array($messages)) {
-            array_walk($message, 'var_dump');
-        } else {
-            var_dump($messages);
-        }
+        var_dump($message);
     }
 }
