@@ -61,15 +61,4 @@ abstract class Event implements EventInterface
     {
         return $this->id ?: static::class;
     }
-
-    /**
-     * Set the unique identifier of this event
-     *
-     * @param mixed $id
-     * @return void
-     */
-    public function setIdentifier($id)
-    {
-        $this->id = $id;
-    }
 }

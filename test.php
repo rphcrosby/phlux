@@ -8,22 +8,25 @@ use Phlux\Event\Event;
 use Phlux\Pipeline\Pipeline;
 use Phlux\Dispatcher\Dispatcher;
 use Phlux\Observer\Observer;
+use Phlux\Listener\Listener;
 use Phlux\Queue\ArrayQueue;
 use Phlux\State\ArrayState;
 use Phlux\Logger\DumpLogger;
 use Phlux\Listener\ListenerCollection;
 use Phlux\Contracts\StateInterface;
 use Phlux\Contracts\EventInterface;
-use Phlux\Contracts\ListenerInterface;
 use Phlux\Contracts\ObserverInterface;
 use Phlux\Contracts\ObservableInterface;
 use Phlux\Middleware\LoggerMiddleware;
 use Phlux\Middleware\ListenersMiddleware;
 use Phlux\Middleware\ThunkMiddleware;
 
-class UserSubscribed extends Event implements EventInterface {}
+class UserSubscribed extends Event
+{
 
-class SubscribersChanged extends Observer implements ObserverInterface
+}
+
+class SubscribersChanged extends Observer
 {
     public function notify(StateInterface $state)
     {
@@ -31,7 +34,7 @@ class SubscribersChanged extends Observer implements ObserverInterface
     }
 }
 
-class SubscribersListener implements ListenerInterface
+class SubscribersListener extends Listener
 {
     public function handle(StateInterface $state, EventInterface $event)
     {

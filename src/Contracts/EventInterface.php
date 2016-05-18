@@ -25,12 +25,4 @@ interface EventInterface
      * @return string
      */
     public function getIdentifier();
-
-    /**
-     * Set the unique identifier of this event
-     *
-     * @param mixed $id
-     * @return void
-     */
-    public function setIdentifier($id);
 }
