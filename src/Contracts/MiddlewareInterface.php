@@ -2,7 +2,7 @@
 
 namespace Phlux\Contracts;
 
-use Phlux\Contracts\StoreInterface;
+use Phlux\Contracts\StateInterface;
 use Phlux\Contracts\EventInterface;
 
 interface MiddlewareInterface
@@ -10,10 +10,10 @@ interface MiddlewareInterface
     /**
      * Run the middleware
      *
-     * @param Phlux\Contracts\StoreInterface $store
+     * @param Phlux\Contracts\StateInterface $state
      * @param Phlux\Contracts\EventInterface $event
      * @param callable $next
-     * @return Phlux\Contracts\StoreInterface
+     * @return Phlux\Contracts\StateInterface
      */
-    public function __invoke(StoreInterface $store, EventInterface $event, callable $next = null);
+    public function __invoke(StateInterface $state, EventInterface $event, callable $next = null);
 }

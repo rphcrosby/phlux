@@ -1,6 +1,6 @@
 <?php
 
-namespace Phlux\States;
+namespace Phlux\State;
 
 use Phlux\Contracts\StateInterface;
 

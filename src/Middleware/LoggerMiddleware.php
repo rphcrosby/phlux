@@ -2,7 +2,7 @@
 
 namespace Phlux\Middleware;
 
-use Phlux\Contracts\StoreInterface;
+use Phlux\Contracts\StateInterface;
 use Phlux\Contracts\EventInterface;
 use Phlux\Contracts\MiddlewareInterface;
 use Phlux\Contracts\LoggerInterface;
@@ -34,22 +34,22 @@ class LoggerMiddleware implements MiddlewareInterface
     /**
      * Run the middleware
      *
-     * @param Phlux\Contracts\StoreInterface $store
+     * @param Phlux\Contracts\StateInterface $state
      * @param Phlux\Contracts\EventInterface $event
      * @param callable $next
-     * @return Phlux\Contracts\StoreInterface
+     * @return Phlux\Contracts\StateInterface
      */
-    public function __invoke(StoreInterface $store, EventInterface $event, callable $next = null)
+    public function __invoke(StateInterface $state, EventInterface $event, callable $next = null)
     {
         $this->logger->log('-----------Previous State-----------');
-        $this->logger->log($store->getState());
+        $this->logger->log($state);
 
         $this->logger->log('----------Dispatched Event----------');
         $this->logger->log($event);
-        $result = $next($store, $event);
+        $result = $next($state, $event);
 
         $this->logger->log('-------------Next State-------------');
-        $this->logger->log($store->getState());
+        $this->logger->log($result);
 
         return $result;
     }

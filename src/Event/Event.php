@@ -1,6 +1,6 @@
 <?php
 
-namespace Phlux;
+namespace Phlux\Event;
 
 use Phlux\Contracts\EventInterface;
 
@@ -12,6 +12,13 @@ abstract class Event implements EventInterface
      * @var mixed
      */
     protected $payload;
+
+    /**
+     * The unique identifier of this event
+     *
+     * @var mixed
+     */
+    protected $id;
 
     /**
      * Create a new event
@@ -35,12 +42,34 @@ abstract class Event implements EventInterface
     }
 
     /**
+     * Set the payload for this event
+     *
+     * @param mixed $payload
+     * @return void
+     */
+    public function setPayload($payload)
+    {
+        $this->payload = $payload;
+    }
+
+    /**
      * Returns a unique identifier for this event
      *
      * @return string
      */
-    public function getType()
+    public function getIdentifier()
     {
-        return static::class;
+        return $this->id ?: static::class;
+    }
+
+    /**
+     * Set the unique identifier of this event
+     *
+     * @param mixed $id
+     * @return void
+     */
+    public function setIdentifier($id)
+    {
+        $this->id = $id;
     }
 }

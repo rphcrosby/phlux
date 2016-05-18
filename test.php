@@ -2,29 +2,40 @@
 
 require 'vendor/autoload.php';
 
-use Phlux\Event;
-use Phlux\Store;
-use Phlux\Pipeline;
-use Phlux\Dispatcher;
-use Phlux\Queues\ArrayQueue;
-use Phlux\States\ArrayState;
+use Phlux\Phlux;
+
+use Phlux\Event\Event;
+use Phlux\Pipeline\Pipeline;
+use Phlux\Dispatcher\Dispatcher;
+use Phlux\Observer\Observer;
+use Phlux\Queue\ArrayQueue;
+use Phlux\State\ArrayState;
+use Phlux\Logger\DumpLogger;
+use Phlux\Listener\ListenerCollection;
 use Phlux\Contracts\StateInterface;
 use Phlux\Contracts\EventInterface;
 use Phlux\Contracts\ListenerInterface;
+use Phlux\Contracts\ObserverInterface;
+use Phlux\Contracts\ObservableInterface;
 use Phlux\Middleware\LoggerMiddleware;
 use Phlux\Middleware\ListenersMiddleware;
-use Phlux\Loggers\DumpLogger;
+use Phlux\Middleware\ThunkMiddleware;
 
-class UserSubscribed extends Event implements EventInterface
+class UserSubscribed extends Event implements EventInterface {}
+
+class SubscribersChanged extends Observer implements ObserverInterface
 {
-
+    public function notify(StateInterface $state)
+    {
+        echo 'lol';
+    }
 }
 
 class SubscribersListener implements ListenerInterface
 {
     public function handle(StateInterface $state, EventInterface $event)
     {
-        switch ($event->getType()) {
+        switch ($event->getIdentifier()) {
             case UserSubscribed::class:
                 $state = $this->handleSubscribed($state, $event);
                 return $state;
@@ -41,35 +52,32 @@ class SubscribersListener implements ListenerInterface
     }
 }
 
-// Setup a new store with initial state
-$store = new Store(new ArrayState([
-    'subscribers' => []
-]));
+// Setup a new phlux
+$phlux = new Phlux(
+    new ArrayState(['subscribers' => []]),
+    new Dispatcher(new ArrayQueue, new Pipeline)
+);
 
-// Add a store listener
-$store->listen(new SubscribersListener);
+// Register event listeners
+$phlux->listen(new SubscribersListener);
 
-// Setup the queue
-$queue = new ArrayQueue;
+// Attach new middleware
+$phlux->middleware(new LoggerMiddleware(new DumpLogger));
+$phlux->middleware(new ThunkMiddleware);
 
-// Setup a new pipeline with middleware
-$pipeline = new Pipeline;
-$pipeline->through(new LoggerMiddleware(new DumpLogger));
-$pipeline->through(new ListenersMiddleware);
-
-// Setup a new dispatcher
-$dispatcher = new Dispatcher($queue, $store, $pipeline);
+// Register an observer
+$phlux->observe(new SubscribersChanged);
 
 // Fire an event on the dispatcher
-$dispatcher->fire(new UserSubscribed([
+$phlux->fire(new UserSubscribed([
     'name' => 'Richard Crosby'
 ]));
 
 // Fire another event on the dispatcher
-$dispatcher->fire(new UserSubscribed([
+$phlux->fire(new UserSubscribed([
     'name' => 'Test User'
 ]));
 
-// Run the dispatcher
-$dispatcher->run();
-$dispatcher->run();
+// Run phlux
+$phlux->run();
+$phlux->run();

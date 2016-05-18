@@ -1,22 +1,20 @@
 <?php
 
-namespace Phlux;
+namespace Phlux\Pipeline;
 
 use Phlux\Contracts\PipelineInterface;
-use Phlux\Contracts\StoreInterface;
+use Phlux\Contracts\StateInterface;
 use Phlux\Contracts\EventInterface;
-use Phlux\Contracts\MiddlewareInterface;
 use Closure;
-
 
 class Pipeline implements PipelineInterface
 {
     /**
-     * The store that is passed through the pipeline
+     * The state that is passed through the pipeline
      *
-     * @var Phlux\Contracts\StoreInterface
+     * @var Phlux\Contracts\StateInterface
      */
-    protected $store;
+    protected $state;
 
     /**
      * The event that is passed through the pipeline
@@ -33,15 +31,15 @@ class Pipeline implements PipelineInterface
     protected $middleware = [];
 
     /**
-     * Pass a store and event through the pipeline
+     * Pass a state and event through the pipeline
      *
-     * @param Phlux\Contracts\StoreInterface $store
+     * @param Phlux\Contracts\StateInterface $state
      * @param Phlux\Contracts\EventInterface $event
      * @return Phlux\Contracts\PipelineInterface
      */
-    public function pass(StoreInterface $store, EventInterface $event)
+    public function pass(StateInterface $state, EventInterface $event)
     {
-        $this->store = $store;
+        $this->state = $state;
         $this->event = $event;
 
         return $this;
@@ -50,12 +48,12 @@ class Pipeline implements PipelineInterface
     /**
      * Specify middleware that the pipeline is to be passed through
      *
-     * @param Phlux\Contracts\MiddlewareInterface $middleware
+     * @param array $middleware
      * @return Phlux\Contracts\PipelineInterface
      */
-    public function through(MiddlewareInterface $middleware)
+    public function through(array $middleware)
     {
-        $this->middlewares[] = $middleware;
+        $this->middleware = $middleware;
 
         return $this;
     }
@@ -64,17 +62,17 @@ class Pipeline implements PipelineInterface
      * Specify the closure that terminates the pipeline
      *
      * @param Closure $final
-     * @return Phlux\Contracts\StoreInterface
+     * @return Phlux\Contracts\StateInterface
      */
-    public function then(Closure $final)
+    public function to(Closure $final)
     {
         return call_user_func_array(
             array_reduce(
-                array_reverse($this->middlewares),
+                array_reverse($this->middleware),
                 $this->prepareMiddleware(),
                 $this->prepareFinal($final)
             ),
-            [$this->store, $this->event]
+            [$this->state, $this->event]
         );
     }
 
@@ -87,9 +85,9 @@ class Pipeline implements PipelineInterface
     {
         return function($next, $middleware)
         {
-            return function($store, $event) use ($next, $middleware)
+            return function($state, $event) use ($next, $middleware)
             {
-                return $middleware($store, $event, $next);
+                return $middleware($state, $event, $next);
             };
         };
     }
@@ -101,9 +99,9 @@ class Pipeline implements PipelineInterface
      */
     protected function prepareFinal($final)
     {
-        return function($store, $event) use ($final)
+        return function($state, $event) use ($final)
         {
-            return call_user_func_array($final, [$store, $event]);
+            return call_user_func_array($final, [$state, $event]);
         };
     }
 }

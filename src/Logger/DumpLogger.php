@@ -1,6 +1,6 @@
 <?php
 
-namespace Phlux\Loggers;
+namespace Phlux\Logger;
 
 use Phlux\Contracts\LoggerInterface;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Phlux\Queues;
+namespace Phlux\Queue;
 
 use Phlux\Contracts\EventInterface;
 use Phlux\Contracts\QueueInterface;
