@@ -12,7 +12,7 @@ use Phlux\Contracts\StateInterface;
 use Phlux\Contracts\EventInterface;
 use Phlux\Contracts\ListenerInterface;
 use Phlux\Middleware\LoggerMiddleware;
-use Phlux\Middleware\ProcessListenersMiddleware;
+use Phlux\Middleware\ListenersMiddleware;
 use Phlux\Loggers\DumpLogger;
 
 class UserSubscribed extends Event implements EventInterface
