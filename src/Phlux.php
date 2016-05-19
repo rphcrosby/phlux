@@ -72,6 +72,8 @@ class Phlux implements ObservableInterface
      */
     public function __call($method, $parameters)
     {
-        return call_user_func_array([$this->dispatcher, $method], $parameters);
+        call_user_func_array([$this->dispatcher, $method], $parameters);
+
+        return $this;
     }
 }
