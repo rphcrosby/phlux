@@ -8,9 +8,10 @@ use Phlux\Contracts\ObserverInterface;
 use Phlux\Contracts\EventInterface;
 use Phlux\Contracts\MiddlewareInterface;
 use Phlux\Contracts\ObservableInterface;
+use Phlux\Contracts\PhluxInterface;
 use Phlux\Traits\ObservableTrait;
 
-class Phlux implements ObservableInterface
+class Phlux implements ObservableInterface, PhluxInterface
 {
     use ObservableTrait;
 

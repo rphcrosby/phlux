@@ -70,7 +70,7 @@ class State implements StateInterface, Serializable
      * @param mixed $default
      * @return mixed
      */
-    public function get($key, $default)
+    public function get($key, $default = null)
     {
         $array = $this->data;
 

@@ -41,6 +41,13 @@ class Dispatcher implements DispatcherInterface
     protected $middleware = [];
 
     /**
+     * An array of registered events
+     *
+     * @var array
+     */
+    protected $evemts = [];
+
+    /**
      * Create a new queue
      *
      * @param Phlux\Contracts\QueueInterface $queue
@@ -56,23 +63,60 @@ class Dispatcher implements DispatcherInterface
     /**
      * Registers a new listener
      *
+     * @param string $event
      * @param Phlux\Contacts\ListenerInterface $listener
      * @return void
      */
-    public function listen(ListenerInterface $listener)
+    public function listen($event, ListenerInterface $listener)
     {
-        $this->listeners[] = $listener;
+        // If listeners already exist for this event
+        if ($this->hasListeners($event)) {
+
+            // Get the current listeners
+            $listeners = $this->listeners[$event];
+
+            // If more than one listener exists already then add this listener to them
+            // otherwise case it to an array
+            if (is_array($listeners)) {
+                $listeners = array_push($listeners, $event);
+            } else {
+                $listeners = array_push([$listeners], $event);
+            }
+
+            $this->listeners[$event] = $listeners;
+        } else {
+
+            // Otherwise this listener is the first listener for this event
+            $this->listeners[$event] = $listener;
+        }
     }
 
     /**
      * Fires a new event
      *
-     * @param Phlux\Contracts\QueueInterface $event
+     * @param string $event
+     * @param array $payload
      * @return void
      */
-    public function fire(EventInterface $event)
+    public function fire($event, array $payload = [])
     {
-        $this->queue->push($event);
+        $event = $this->resolveEvent($event);
+        $event->setPayload($payload);
+
+        if ($event) {
+            $this->queue->push($event);
+        }
+    }
+
+    /**
+     * Binds a new event to Phlux
+     *
+     * @param Phlux\Contracts\EventInterface $event
+     * @return void
+     */
+    public function bind(EventInterface $event)
+    {
+        $this->events[$event->getIdentifier()] = $event;
     }
 
     /**
@@ -84,6 +128,55 @@ class Dispatcher implements DispatcherInterface
     public function middleware(MiddlewareInterface $middleware)
     {
         $this->middleware[] = $middleware;
+    }
+
+    /**
+     * Gets the list of listeners that should handle the incoming event
+     *
+     * @param Phlux\Contracts\EventInterface $event
+     * @return array
+     */
+    protected function resolveListeners(EventInterface $event)
+    {
+        if ($this->hasListeners($event->getIdentifier())) {
+            $listeners = $this->listeners[$event->getIdentifier()];
+            return is_array($listeners) ? $listeners : [$listeners];
+        }
+
+        return [];
+    }
+
+    /**
+     * Finds an event either by it's class name or by alias
+     *
+     * @param string $event
+     * @return Phlux\Contracts\EventInterface
+     */
+    protected function resolveEvent($event)
+    {
+        if ($event instanceof EventInterface) {
+            return $event;
+        }
+
+        if (class_exists($event)) {
+            $instance = new $event;
+            return $instance instanceof EventInterface ? $instance : null;
+        }
+
+        if (array_key_exists($event, $this->events)) {
+            return $this->events[$event];
+        }
+    }
+
+    /**
+     * Checks if an event identifier has any listeners
+     *
+     * @param string $event
+     * @return array
+     */
+    public function hasListeners($event)
+    {
+        return array_key_exists($event, $this->listeners);
     }
 
     /**
@@ -106,7 +199,7 @@ class Dispatcher implements DispatcherInterface
             ->through($this->middleware)
             ->to(function($state, $event)
             {
-                return array_reduce($this->listeners, function($state, $listener) use ($event)
+                return array_reduce($this->resolveListeners($event), function($state, $listener) use ($event)
                 {
                     return $listener->handle($state, $event);
                 }, $state);

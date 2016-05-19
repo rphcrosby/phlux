@@ -9,7 +9,8 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "psr/log": "^1.0"
+        "psr/log": "^1.0",
+        "cboden/ratchet": "^0.3.4"
     },
     "autoload": {
         "psr-4": {

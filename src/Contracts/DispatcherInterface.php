@@ -21,20 +21,38 @@ interface DispatcherInterface
     public function __construct(QueueInterface $queue, PipelineInterface $pipeline);
 
     /**
-     * Registers a listener
+     * Registers a new listener
      *
+     * @param string $event
      * @param Phlux\Contacts\ListenerInterface $listener
      * @return void
      */
-    public function listen(ListenerInterface $listener);
+    public function listen($event, ListenerInterface $listener);
+
+    /**
+     * Checks if an event identifier has any listeners
+     *
+     * @param string $event
+     * @return array
+     */
+    public function hasListeners($event);
 
     /**
      * Fires a new event
      *
-     * @param Phlux\Contracts\QueueInterface $event
+     * @param string $event
+     * @param array $payload
      * @return void
      */
-    public function fire(EventInterface $event);
+    public function fire($event, array $payload = []);
+
+    /**
+     * Registers a new event to Phlux
+     *
+     * @param Phlux\Contracts\EventInterface $event
+     * @return void
+     */
+    public function bind(EventInterface $event);
 
     /**
      * Registers a new middleware

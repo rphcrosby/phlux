@@ -15,12 +15,19 @@ abstract class Event implements EventInterface, Serializable
     protected $payload;
 
     /**
+     * The unique identifier for this event
+     *
+     * @var string
+     */
+    protected $id;
+
+    /**
      * Create a new event
      *
      * @param mixed $payload
      * @return void
      */
-    public function __construct($payload)
+    public function __construct($payload = null)
     {
         $this->payload = $payload;
     }
@@ -36,6 +43,16 @@ abstract class Event implements EventInterface, Serializable
     }
 
     /**
+     * Returns the unique identifier for this event
+     *
+     * @return string
+     */
+    public function getIdentifier()
+    {
+        return $this->id ?: static::class;
+    }
+
+    /**
      * Set the payload for this event
      *
      * @param mixed $payload
@@ -44,16 +61,6 @@ abstract class Event implements EventInterface, Serializable
     public function setPayload($payload)
     {
         $this->payload = $payload;
-    }
-
-    /**
-     * Returns a unique identifier for this event
-     *
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return static::class;
     }
 
     /**
