@@ -96,6 +96,11 @@ class Dispatcher implements DispatcherInterface
         // Get the next event
         $event = $this->queue->next();
 
+        // If there is no event in the queue then just return the current state
+        if (!$event) {
+            return $state;
+        }
+
         return $this->pipeline
             ->pass($state, $event)
             ->through($this->middleware)

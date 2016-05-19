@@ -3,8 +3,9 @@
 namespace Phlux\Event;
 
 use Phlux\Contracts\EventInterface;
+use Serializable;
 
-abstract class Event implements EventInterface
+abstract class Event implements EventInterface, Serializable
 {
     /**
      * The payload of the event
@@ -12,13 +13,6 @@ abstract class Event implements EventInterface
      * @var mixed
      */
     protected $payload;
-
-    /**
-     * The unique identifier of this event
-     *
-     * @var mixed
-     */
-    protected $id;
 
     /**
      * Create a new event
@@ -59,6 +53,32 @@ abstract class Event implements EventInterface
      */
     public function getIdentifier()
     {
-        return $this->id ?: static::class;
+        return static::class;
+    }
+
+    /**
+     * Serializes this event
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        return json_encode([
+            'id' => $this->getIdentifer(),
+            'payload' => $this->getPayload()
+        ]);
+    }
+
+    /**
+     * Unserializes an event
+     *
+     * @param string $serialized
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        $decoded = json_decode($serialized);
+        $class = $decoded['id'];
+        return new $class($decoded['payload']);
     }
 }

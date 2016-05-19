@@ -29,7 +29,7 @@ class Phlux implements ObservableInterface
     protected $dispatcher;
 
     /**
-     * Create a new store
+     * Create a new Phlux
      *
      * @param Phlux\Contracts\StateInterface $state
      * @param Phlux\Contracts\DispatcherInterface $dispatcher
@@ -59,6 +59,8 @@ class Phlux implements ObservableInterface
     public function run()
     {
         $this->state = $this->dispatcher->handle($this->state);
+
+        $this->notifyObservers();
     }
 
     /**

@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
  * Logs any events that are passed through the pipeline
  *
  */
-class LoggerMiddleware implements MiddlewareInterface
+final class LoggerMiddleware implements MiddlewareInterface
 {
     /**
      * The logger to be used for output

@@ -11,7 +11,7 @@ use Phlux\Contracts\LoggerInterface;
  * If the event being handled is a thunk then this middleware will resolve it
  *
  */
-class ThunkMiddleware implements MiddlewareInterface
+final class ThunkMiddleware implements MiddlewareInterface
 {
     /**
      * Run the middleware

@@ -6,11 +6,10 @@ features.
 ### States
 
 States in Phlux are immutable, meaning they cannot be modified. To perform a state change you must move
-from one state to another. States can be stored however you choose, Phlux comes with a simple array state
-to get you started:
+from one state to another.
 
 ```php
-use Phlux\State\ArrayState as State;
+use Phlux\State\State;
 
 $state = new State([
     'subscribers' => []
@@ -77,7 +76,7 @@ You may use any service with Phlux to queue events, there's an array queue to ge
 
 ```php
 use Phlux\Phlux;
-use Phlux\State\ArrayState as State;
+use Phlux\State\State;
 use Phlux\Dispatcher\Dispatcher;
 use Phlux\Pipeline\Pipeline;
 use Phlux\Queue\ArrayQueue as Queue;
@@ -148,4 +147,30 @@ $phlux->observe(new SubscribersChanged);
 $phlux->fire(new UserSubscribed(['name' => 'Joe Blogs']));
 
 $phlux->run(); // prints 'Subscribers have changed!'
+```
+
+### Persistence
+
+Phlux comes with an easy way to persist states using stores. Here's an example using a basic ArrayStore:
+
+```php
+use Phlux\Store\ArrayStore;
+use Phlux\State\State;
+
+$state = new State([
+    'subscribers' => []
+]);
+
+$store = new ArrayStore;
+$store->set($state);
+```
+
+Phlux comes with an observer that helps to automate persistence each time the state changes. You must
+register the observer with Phlux to enable it.
+
+```php
+use Phlux\Observer\PersistenceObserver;
+use Phlux\Store\ArrayStore;
+
+$phlux->observe(new PersistenceObserver(new ArrayStore));
 ```

@@ -5,6 +5,14 @@ namespace Phlux\Contracts;
 interface StateInterface
 {
     /**
+     * Create a new state
+     *
+     * @param array|null $data
+     * @return void
+     */
+    public function __construct($data, array $initial = []);
+
+    /**
      * Checks if a key exists
      *
      * @param string $key
