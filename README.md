@@ -6,7 +6,7 @@ features.
 ### States
 
 States in Phlux are immutable, meaning they cannot be modified. To perform a state change you must move
-from one state to another. States can stored however you choose, Phlux comes with a simple array state
+from one state to another. States can be stored however you choose, Phlux comes with a simple array state
 to get you started:
 
 ```php
@@ -119,13 +119,17 @@ class LoggerMiddleware implements MiddlewareInterface
 }
 
 $phlux->middleware(new LoggerMiddleware);
+
+$phlux->fire(new UserSubscribed(['name' => 'Joe Blogs']));
+
+$phlux->run(); // prints 'Event dispatched: UserSubscribed'
 ```
 
 ### Observers
 
 Observers differ from listeners in that they observe the state of the application directly and don't
 respond specifically to events being fired. Observers are not able to modify the state of the application,
-they must dispatch an event and let listeners it that instead.
+they must dispatch an event and let listeners handle it instead.
 
 ```php
 use Phlux\Observer\Observer;
@@ -143,5 +147,5 @@ $phlux->observe(new SubscribersChanged);
 
 $phlux->fire(new UserSubscribed(['name' => 'Joe Blogs']));
 
-$phlux->run(); // echos 'Subscribers have changed!'
+$phlux->run(); // prints 'Subscribers have changed!'
 ```
