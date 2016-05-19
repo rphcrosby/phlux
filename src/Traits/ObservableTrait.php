@@ -11,7 +11,7 @@ trait ObservableTrait
      *
      * @var array
      */
-    protected $observers;
+    protected $observers = [];
 
     /**
      * Register an observer

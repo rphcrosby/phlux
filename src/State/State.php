@@ -4,11 +4,13 @@ namespace Phlux\State;
 
 use Phlux\Contracts\StateInterface;
 
+use Serializable;
+
 /**
  * Array implementation of a Phlux state
  *
  */
-class State implements StateInterface
+class State implements StateInterface, Serializable
 {
     /**
      * An array of state data
@@ -25,7 +27,7 @@ class State implements StateInterface
      */
     public function __construct($data, array $initial = [])
     {
-        if (is_null($data)) {
+        if (is_null($data) || !$data) {
             $data = $initial;
         }
 
@@ -65,9 +67,10 @@ class State implements StateInterface
      * Gets a value from the state by key
      *
      * @param string $key
+     * @param mixed $default
      * @return mixed
      */
-    public function get($key)
+    public function get($key, $default)
     {
         $array = $this->data;
 
@@ -81,7 +84,7 @@ class State implements StateInterface
 
         foreach (explode('.', $key) as $segment) {
             if (!is_array($array) || !array_key_exists($segment, $array)) {
-                return null;
+                return $default;
             }
 
             $array = $array[$segment];
@@ -159,5 +162,36 @@ class State implements StateInterface
         }
 
         return new static($array);
+    }
+
+    /**
+     * Serializes this event
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        return json_encode($this->data);
+    }
+
+    /**
+     * Unserializes an event
+     *
+     * @param string $serialized
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        $this->data = (array) json_decode($serialized);
+    }
+
+    /**
+     * Casts the state to a string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->serialize();
     }
 }

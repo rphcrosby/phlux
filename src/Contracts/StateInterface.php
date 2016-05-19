@@ -24,9 +24,10 @@ interface StateInterface
      * Gets a value from the state by key
      *
      * @param string $key
+     * @param mixed $default
      * @return mixed
      */
-    public function get($key);
+    public function get($key, $default);
 
     /**
      * Set a value and return a new state

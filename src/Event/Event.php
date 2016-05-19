@@ -64,7 +64,7 @@ abstract class Event implements EventInterface, Serializable
     public function serialize()
     {
         return json_encode([
-            'id' => $this->getIdentifer(),
+            'id' => $this->getIdentifier(),
             'payload' => $this->getPayload()
         ]);
     }
@@ -80,5 +80,15 @@ abstract class Event implements EventInterface, Serializable
         $decoded = json_decode($serialized);
         $class = $decoded['id'];
         return new $class($decoded['payload']);
+    }
+
+    /**
+     * Casts the state to a string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->serialize();
     }
 }
